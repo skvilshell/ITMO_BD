@@ -1,0 +1,125 @@
+generator client {
+   provider                   = "prisma-generator-plantuml-erd"
+   output                     = "erd.puml"
+   exportPerTables            = true
+   showUniqueKeyLabel         = true
+   isShowForeignKeyOnRelation = true
+}
+
+datasource db {
+   provider = "postgresql"
+   url      = env("DATABASE_URL")
+}
+
+model User {
+   id           String        @id @default(cuid())
+   email        String        @unique
+   f_name       String
+   s_name       String?
+   date_created DateTime      @default(now())
+   Student      Student?
+   Teacher      Teacher?
+   Certificate  Certificate[]
+}
+
+model Student {
+   id       String     @id @default(cuid())
+   user_id  String     @unique
+   user     User       @relation(fields: [user_id], references: [id])
+   Course   Course?    @relation(fields: [courseId], references: [id])
+   courseId String?
+   Task     Task[]
+   Question Question[]
+}
+
+model Course {
+   id           String        @id @default(cuid())
+   name         String
+   description  String?
+   date_created DateTime      @default(now())
+   Students     Student[]
+   Teacher      Teacher?      @relation(fields: [teacherId], references: [id])
+   teacherId    String?       @map("teacher_id")
+   Module       Module[]
+   Certificate  Certificate[]
+}
+
+model Teacher {
+   id      String   @id @default(cuid())
+   user_id String   @unique
+   user    User     @relation(fields: [user_id], references: [id])
+   Courses Course[]
+}
+
+model Module {
+   id          String   @id @default(cuid())
+   name        String
+   description String?
+   serial      Int
+   Course      Course   @relation(fields: [courseId], references: [id])
+   courseId    String
+   Test        Test[]
+   Lesson      Lesson[]
+}
+
+model Test {
+   id          String     @id @default(cuid())
+   name        String
+   description String?
+   date        DateTime   @default(now())
+   Module      Module     @relation(fields: [moduleId], references: [id])
+   moduleId    String
+   Questions   Question[]
+}
+
+model Question {
+   id      String    @id @default(cuid())
+   text    String
+   q_1     String?
+   q_2     String?
+   q_3     String?
+   q_4     String?
+   answer  String?
+   Test    Test      @relation(fields: [testId], references: [id])
+   testId  String
+   Student Student[]
+}
+
+model Lesson {
+   id          String  @id @default(cuid())
+   name        String
+   description String?
+   serial      Int
+   content     Json?   @db.Json
+   Module      Module  @relation(fields: [moduleId], references: [id])
+   moduleId    String
+   Task        Task[]
+}
+
+model Task {
+   id          String    @id @default(cuid())
+   name        String
+   description String?
+   date        DateTime  @default(now())
+   Lesson      Lesson    @relation(fields: [lessonId], references: [id])
+   lessonId    String
+   Student     Student[]
+   status      Boolean   @default(false)
+}
+
+model Certificate {
+   id        String             @id @default(cuid())
+   course_id String
+   user_id   String
+   status    CERTIFICATE_STATUS
+   date      DateTime           @default(now())
+   Course    Course             @relation(fields: [course_id], references: [id])
+   User      User               @relation(fields: [user_id], references: [id])
+}
+
+enum CERTIFICATE_STATUS {
+   SUCCESS
+   NOT_STARTED
+   IN_PROGRESS
+   CANCELED
+}

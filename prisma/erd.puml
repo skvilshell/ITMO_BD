@@ -1,0 +1,529 @@
+@startuml erd
+skinparam linetype ortho
+enum "CERTIFICATE_STATUS" as CERTIFICATE_STATUS {
+  SUCCESS
+  NOT_STARTED
+  IN_PROGRESS
+  CANCELED
+}
+entity "User" as User {
++ id [PK] : String 
+--
+  * email : [UK] String
+  * f_name : String
+  s_name : String
+  * date_created : DateTime
+}
+
+entity "Student" as Student {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+  # courseId : [FK] Course
+}
+
+entity "Course" as Course {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date_created : DateTime
+  # teacherId : [FK] Teacher
+}
+
+entity "Teacher" as Teacher {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+}
+
+entity "Module" as Module {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  # courseId : [FK] Course
+}
+
+entity "Test" as Test {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # moduleId : [FK] Module
+}
+
+entity "Question" as Question {
++ id [PK] : String 
+--
+  * text : String
+  q_1 : String
+  q_2 : String
+  q_3 : String
+  q_4 : String
+  answer : String
+  # testId : [FK] Test
+}
+
+entity "Lesson" as Lesson {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  content : Json
+  # moduleId : [FK] Module
+}
+
+entity "Task" as Task {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # lessonId : [FK] Lesson
+  * status : Boolean
+}
+
+entity "Certificate" as Certificate {
++ id [PK] : String 
+--
+  # course_id : [FK] Course
+  # user_id : [FK] User
+  * status : CERTIFICATE_STATUS
+  * date : DateTime
+}
+
+' Relations
+Student |o--|| User: user_id
+Student }o--o| Course: courseId
+Course }o--o| Teacher: teacherId
+Teacher |o--|| User: user_id
+Module }o--|| Course: courseId
+Test }o--|| Module: moduleId
+Question }o--|| Test: testId
+Lesson }o--|| Module: moduleId
+Task }o--|| Lesson: lessonId
+Certificate }o--|| Course: course_id
+Certificate }o--|| User: user_id
+' ManyToMany Relations
+Student }o--o{ Question
+Student }o--o{ Task
+' enum relations
+Certificate |o--|| CERTIFICATE_STATUS
+@enduml
+@startuml User
+skinparam linetype ortho
+entity "User" as User {
++ id [PK] : String 
+--
+  * email : [UK] String
+  * f_name : String
+  s_name : String
+  * date_created : DateTime
+}
+
+entity "Student" as Student {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+  # courseId : [FK] Course
+}
+
+entity "Teacher" as Teacher {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+}
+
+entity "Certificate" as Certificate {
++ id [PK] : String 
+--
+  # course_id : [FK] Course
+  # user_id : [FK] User
+  * status : CERTIFICATE_STATUS
+  * date : DateTime
+}
+
+' Relations
+Student |o--|| User: user_id
+Teacher |o--|| User: user_id
+Certificate }o--|| User: user_id
+' ManyToMany Relations
+' enum relations
+@enduml
+@startuml Student
+skinparam linetype ortho
+entity "User" as User {
++ id [PK] : String 
+--
+  * email : [UK] String
+  * f_name : String
+  s_name : String
+  * date_created : DateTime
+}
+
+entity "Student" as Student {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+  # courseId : [FK] Course
+}
+
+entity "Course" as Course {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date_created : DateTime
+  # teacherId : [FK] Teacher
+}
+
+entity "Question" as Question {
++ id [PK] : String 
+--
+  * text : String
+  q_1 : String
+  q_2 : String
+  q_3 : String
+  q_4 : String
+  answer : String
+  # testId : [FK] Test
+}
+
+entity "Task" as Task {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # lessonId : [FK] Lesson
+  * status : Boolean
+}
+
+' Relations
+Student |o--|| User: user_id
+Student }o--o| Course: courseId
+' ManyToMany Relations
+Student }o--o{ Question
+Student }o--o{ Task
+' enum relations
+@enduml
+@startuml Course
+skinparam linetype ortho
+entity "Student" as Student {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+  # courseId : [FK] Course
+}
+
+entity "Course" as Course {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date_created : DateTime
+  # teacherId : [FK] Teacher
+}
+
+entity "Teacher" as Teacher {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+}
+
+entity "Module" as Module {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  # courseId : [FK] Course
+}
+
+entity "Certificate" as Certificate {
++ id [PK] : String 
+--
+  # course_id : [FK] Course
+  # user_id : [FK] User
+  * status : CERTIFICATE_STATUS
+  * date : DateTime
+}
+
+' Relations
+Student }o--o| Course: courseId
+Course }o--o| Teacher: teacherId
+Module }o--|| Course: courseId
+Certificate }o--|| Course: course_id
+' ManyToMany Relations
+' enum relations
+@enduml
+@startuml Teacher
+skinparam linetype ortho
+entity "User" as User {
++ id [PK] : String 
+--
+  * email : [UK] String
+  * f_name : String
+  s_name : String
+  * date_created : DateTime
+}
+
+entity "Course" as Course {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date_created : DateTime
+  # teacherId : [FK] Teacher
+}
+
+entity "Teacher" as Teacher {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+}
+
+' Relations
+Course }o--o| Teacher: teacherId
+Teacher |o--|| User: user_id
+' ManyToMany Relations
+' enum relations
+@enduml
+@startuml Module
+skinparam linetype ortho
+entity "Course" as Course {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date_created : DateTime
+  # teacherId : [FK] Teacher
+}
+
+entity "Module" as Module {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  # courseId : [FK] Course
+}
+
+entity "Test" as Test {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # moduleId : [FK] Module
+}
+
+entity "Lesson" as Lesson {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  content : Json
+  # moduleId : [FK] Module
+}
+
+' Relations
+Module }o--|| Course: courseId
+Test }o--|| Module: moduleId
+Lesson }o--|| Module: moduleId
+' ManyToMany Relations
+' enum relations
+@enduml
+@startuml Test
+skinparam linetype ortho
+entity "Module" as Module {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  # courseId : [FK] Course
+}
+
+entity "Test" as Test {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # moduleId : [FK] Module
+}
+
+entity "Question" as Question {
++ id [PK] : String 
+--
+  * text : String
+  q_1 : String
+  q_2 : String
+  q_3 : String
+  q_4 : String
+  answer : String
+  # testId : [FK] Test
+}
+
+' Relations
+Test }o--|| Module: moduleId
+Question }o--|| Test: testId
+' ManyToMany Relations
+' enum relations
+@enduml
+@startuml Question
+skinparam linetype ortho
+entity "Student" as Student {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+  # courseId : [FK] Course
+}
+
+entity "Test" as Test {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # moduleId : [FK] Module
+}
+
+entity "Question" as Question {
++ id [PK] : String 
+--
+  * text : String
+  q_1 : String
+  q_2 : String
+  q_3 : String
+  q_4 : String
+  answer : String
+  # testId : [FK] Test
+}
+
+' Relations
+Question }o--|| Test: testId
+' ManyToMany Relations
+Student }o--o{ Question
+' enum relations
+@enduml
+@startuml Lesson
+skinparam linetype ortho
+entity "Module" as Module {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  # courseId : [FK] Course
+}
+
+entity "Lesson" as Lesson {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  content : Json
+  # moduleId : [FK] Module
+}
+
+entity "Task" as Task {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # lessonId : [FK] Lesson
+  * status : Boolean
+}
+
+' Relations
+Lesson }o--|| Module: moduleId
+Task }o--|| Lesson: lessonId
+' ManyToMany Relations
+' enum relations
+@enduml
+@startuml Task
+skinparam linetype ortho
+entity "Student" as Student {
++ id [PK] : String 
+--
+  # user_id : [UK] [FK] User
+  # courseId : [FK] Course
+}
+
+entity "Lesson" as Lesson {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * serial : Int
+  content : Json
+  # moduleId : [FK] Module
+}
+
+entity "Task" as Task {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date : DateTime
+  # lessonId : [FK] Lesson
+  * status : Boolean
+}
+
+' Relations
+Task }o--|| Lesson: lessonId
+' ManyToMany Relations
+Student }o--o{ Task
+' enum relations
+@enduml
+@startuml Certificate
+skinparam linetype ortho
+enum "CERTIFICATE_STATUS" as CERTIFICATE_STATUS {
+  SUCCESS
+  NOT_STARTED
+  IN_PROGRESS
+  CANCELED
+}
+entity "User" as User {
++ id [PK] : String 
+--
+  * email : [UK] String
+  * f_name : String
+  s_name : String
+  * date_created : DateTime
+}
+
+entity "Course" as Course {
++ id [PK] : String 
+--
+  * name : String
+  description : String
+  * date_created : DateTime
+  # teacherId : [FK] Teacher
+}
+
+entity "Certificate" as Certificate {
++ id [PK] : String 
+--
+  # course_id : [FK] Course
+  # user_id : [FK] User
+  * status : CERTIFICATE_STATUS
+  * date : DateTime
+}
+
+' Relations
+Certificate }o--|| Course: course_id
+Certificate }o--|| User: user_id
+' ManyToMany Relations
+' enum relations
+Certificate |o--|| CERTIFICATE_STATUS
+@enduml
